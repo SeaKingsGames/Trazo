@@ -1,6 +1,8 @@
 // Pide a una IA de texto el código SVG de un dibujo con el estilo fijo de Trazo (caricatura 2D, contorno grueso).
 // No es IA de imágenes: la IA escribe el dibujo como código y la página lo muestra.
 // Primero Gemini (nivel gratis); fal.ai solo si está su llave y Gemini ya no responde.
+// Hay que entrar con la cuenta de SeaKings (la misma de Bocón) y los dibujos se cuentan junto con los de Bocón.
+const C=require('./_cuentas');
 const env=k=>(process.env[k]||'').trim();
 const num=(k,d)=>{const v=Number(env(k));return Number.isFinite(v)&&v>0?v:d;};
 
@@ -25,7 +27,7 @@ Limits
 - Keep it under about 150 elements and 20 KB.
 - The drawing must be suitable for all ages. If the request is not, draw a cute question mark sticker instead.`;
 
-// ---- límite de uso por persona (vive mientras la función está caliente; Gemini gratis pone el tope real) ----
+// ---- freno extra contra ráfagas (vive mientras la función está caliente; el tope real es el del mes) ----
 const usos=new Map();
 function permitido(ip){
   const ahora=Date.now(),hora=3600e3,max=num('LIMITE_POR_HORA',20);
@@ -89,14 +91,19 @@ async function fal(sistema,pedido,temp){
 }
 
 const MENSAJES={
-  agotado:'Ya se usaron todos los dibujos gratis por ahora. Intenta en un rato.',
+  agotado:'La IA está muy ocupada o ya se usaron los dibujos de hoy. Intenta en un rato.',
   bloqueado:'Ese dibujo no se puede hacer. Prueba con otra cosa.',
   'sin-llave':'Falta configurar la llave de la IA en Vercel (GEMINI_API_KEY).',
 };
 
 module.exports=async(req,res)=>{
   res.setHeader('Cache-Control','no-store');
+  if(!C.configurado()) return res.status(503).json({error:'Faltan las variables de Supabase en Vercel.'});
+  const u=await C.usuario(req);if(!u) return res.status(401).json({error:'Entra a tu cuenta para dibujar.',entrar:true});
+  const pro=await C.esPro(u),mes=C.mesActual(),max=C.tope(pro);
+  if(req.method==='GET') return res.status(200).json({pro,usados:await C.usados(u.id,mes),tope:max,topePro:C.tope(true)});
   if(req.method!=='POST') return res.status(405).json({error:'Usa POST'});
+  if(!max) return res.status(403).json({error:'Los dibujos con IA son de Bocón Pro.',pro});
   const ip=String(req.headers['x-forwarded-for']||'').split(',')[0].trim()||'?';
   if(!permitido(ip)) return res.status(429).json({error:'Hiciste muchos dibujos seguidos. Espera un rato y sigue.'});
   let b=req.body;if(typeof b==='string'){try{b=JSON.parse(b);}catch(_){b={};}}b=b||{};
@@ -108,11 +115,18 @@ module.exports=async(req,res)=>{
     pedido=`Here is the current drawing of "${que}":\n${actual.slice(0,60000)}\n\nChange it like this: ${cambio}\nKeep everything else and the same style. Reply with the full new SVG.`;temp=.5;
   }else if(b.otra){pedido+=`\nMake a different version from the usual one (new pose, angle or design), variation #${Math.floor(Math.random()*1000)}.`;temp=1.1;}
 
-  let r=await gemini(ESTILO,pedido,temp);
-  if(r.error&&r.error!=='bloqueado'){const f=await fal(ESTILO,pedido,temp);if(!f.error) r=f;}
-  if(r.error) return res.status(r.error==='agotado'?429:502).json({error:MENSAJES[r.error]||'La IA no respondió. Intenta otra vez.'});
-  const svg=limpiar(r.texto);
-  if(!svg) return res.status(502).json({error:'La IA no regresó un dibujo. Intenta otra vez.'});
-  res.status(200).json({svg,modelo:r.modelo});
+  // se aparta el dibujo antes de llamar a la IA; es el mismo contador que usa Bocón
+  const r=await C.rpc('bocon_dibujo_usar',{p_user:u.id,p_mes:mes,p_tope:max});
+  if(!r.ok) return res.status(500).json({error:'No pude revisar tus dibujos del mes. Intenta otra vez.'});
+  const n=Number(r.j);
+  if(!(n>0)) return res.status(429).json({error:pro?`Ya usaste tus ${max} dibujos de este mes. Se renuevan el día 1.`:`Ya usaste tus ${max} dibujos gratis de este mes. Con Bocón Pro tienes ${C.tope(true)} al mes.`,usados:max,tope:max,pro});
+  const devolver=()=>C.rpc('bocon_dibujo_devolver',{p_user:u.id,p_mes:mes}).catch(()=>null);
+
+  let g=await gemini(ESTILO,pedido,temp);
+  if(g.error&&g.error!=='bloqueado'){const f=await fal(ESTILO,pedido,temp);if(!f.error) g=f;}
+  if(g.error){await devolver();return res.status(g.error==='agotado'?429:502).json({error:MENSAJES[g.error]||'La IA no respondió. Intenta otra vez.',usados:n-1,tope:max});}
+  const svg=limpiar(g.texto);
+  if(!svg){await devolver();return res.status(502).json({error:'La IA no regresó un dibujo. Intenta otra vez.',usados:n-1,tope:max});}
+  res.status(200).json({svg,usados:n,tope:max});
 };
 module.exports.limpiar=limpiar;
