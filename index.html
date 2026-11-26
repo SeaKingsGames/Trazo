@@ -114,6 +114,23 @@ h1{font:400 clamp(34px,8.2vw,58px)/1.04 'Bagel Fat One',Onest,sans-serif;margin:
 footer{padding:28px 0 40px;color:var(--gris);font-size:15px}
 footer a{color:inherit}
 
+.cuenta-btn{border:2.5px solid var(--tinta);background:var(--blanco);border-radius:999px;padding:6px 16px;font-weight:600;font-size:15px;cursor:pointer;min-height:40px}
+.cuenta-btn:hover{background:#e9eee9}
+.cuenta{margin:12px 0 0;font-size:15px;color:var(--gris);min-height:1.55em}
+.cuenta a,.cuenta button{color:var(--tinta);font:inherit;font-weight:600;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer}
+dialog.caja{border:3px solid var(--tinta);border-radius:18px;padding:0;width:min(440px,calc(100% - 32px));background:var(--blanco);color:var(--tinta);box-shadow:6px 6px 0 var(--tinta)}
+dialog.caja::backdrop{background:rgba(27,26,34,.55)}
+.caja form,.caja .dentro{padding:22px;display:flex;flex-direction:column;gap:10px}
+.caja h2{font:400 28px/1.1 'Bagel Fat One',Onest,sans-serif;margin:0 0 2px}
+.caja label{font-weight:600;font-size:15px;margin-top:4px}
+.caja .campo{min-height:52px;font-size:17px;padding:10px 14px}
+.caja .nota{margin:0;color:var(--gris);font-size:15px}
+.caja .paso{display:flex;flex-direction:column;gap:10px}
+.caja .paso[hidden]{display:none}
+.caja .error{margin:0;color:#b3261e;font-size:15px}
+.caja .error:empty{display:none}
+.botones{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
+.caja .google{width:100%}
 .toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%) translateY(12px);opacity:0;visibility:hidden;background:var(--tinta);color:#fff;padding:12px 18px;border-radius:12px;font-weight:500;transition:transform .2s,opacity .2s,visibility .2s;z-index:9;max-width:calc(100% - 32px)}
 .toast.ver{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -123,7 +140,7 @@ footer a{color:inherit}
 <div class="envoltura">
   <header class="barra">
     <a class="marca" href="/" aria-label="Trazo, inicio">Trazo</a>
-    <a class="de" href="https://www.seakingsstudios.com">de SeaKingsStudios</a>
+    <button class="cuenta-btn" id="cuentaBtn" type="button" hidden>Entrar</button>
   </header>
 
   <main class="mesa">
@@ -157,6 +174,7 @@ footer a{color:inherit}
           </div>
         </div>
       </div>
+      <p class="cuenta" id="cuenta" aria-live="polite"></p>
       <div id="herramientas" class="oculto">
         <div class="acciones">
           <button class="boton" type="button" id="bajarSvg">Descargar SVG</button>
@@ -189,7 +207,7 @@ footer a{color:inherit}
     <section>
       <h2>Cómo funciona</h2>
       <ol>
-        <li>Escribes qué quieres dibujar, como «un gato astronauta».</li>
+        <li>Entras con tu cuenta de SeaKings y escribes qué quieres dibujar, como «un gato astronauta».</li>
         <li>Una IA de texto escribe el dibujo como código SVG, siempre con el mismo estilo de caricatura.</li>
         <li>Lo ves en el tapete y lo descargas en SVG, en PNG o como estampita con borde blanco.</li>
       </ol>
@@ -199,13 +217,13 @@ footer a{color:inherit}
     <section>
       <h2>Preguntas</h2>
       <h3>¿Cuesta?</h3>
-      <p>No. Hay un límite de dibujos por hora para que alcance para todos.</p>
+      <p>No. Con tu cuenta gratis de SeaKings tienes <span class="n-gratis">10</span> dibujos al mes, y con Bocón Pro, <span class="n-pro">30</span>. Es la misma cuenta de Bocón Estudio y los dibujos se cuentan juntos aquí y allá. Se renuevan el día 1.</p>
       <h3>¿Por qué en SVG?</h3>
       <p>Porque el dibujo está hecho de figuras y no de pixeles: se ve nítido grande o chico, pesa poco y se puede editar en programas como Inkscape, Illustrator o Figma.</p>
       <h3>¿Puedo usar los dibujos?</h3>
       <p>Sí, en tus videos, juegos y proyectos.</p>
       <h3>¿Qué pasa con lo que escribo?</h3>
-      <p>Se manda a Gemini, de Google, para hacer el dibujo. No escribas datos personales. Tu lista de dibujos se queda en tu navegador.</p>
+      <p>Lo que pides se manda a Gemini, de Google, para hacer el dibujo; no escribas datos personales. De tu cuenta guardamos tu correo y cuántos dibujos llevas en el mes. Tu lista de dibujos se queda en tu navegador.</p>
       <h3>Salió raro, ¿qué hago?</h3>
       <p>Usa «¿Le cambias algo?» para pedir un arreglo, o «Hacer otra versión». Pedidos cortos y concretos salen mejor.</p>
     </section>
@@ -214,6 +232,37 @@ footer a{color:inherit}
   <footer>Hecho por <a href="https://www.seakingsstudios.com">SeaKingsStudios</a>.</footer>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog class="caja" id="entrar" aria-labelledby="entrarTitulo">
+  <form id="entrarForm" novalidate>
+    <h2 id="entrarTitulo">Entra para dibujar</h2>
+    <p class="nota">Es tu cuenta de SeaKings, la misma de Bocón Estudio. Sin contraseña: te mandamos un código a tu correo.</p>
+    <label for="correo">Tu correo</label>
+    <input class="campo" id="correo" type="email" inputmode="email" autocomplete="email" placeholder="tucorreo@gmail.com">
+    <div id="pasoCodigo" class="paso" hidden>
+      <p class="nota">Te lo mandamos a <b id="correoA"></b>. Escribe el código que viene en el correo o toca su enlace.</p>
+      <label for="codigo">Código</label>
+      <input class="campo" id="codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="10">
+    </div>
+    <p class="error" id="entrarError" role="alert"></p>
+    <div class="botones">
+      <button class="boton" type="button" data-cerrar>Cancelar</button>
+      <button class="boton principal" type="submit" id="entrarSeguir">Mandarme el código</button>
+    </div>
+    <button class="boton google" type="button" id="entrarGoogle" hidden>Entrar con Google</button>
+  </form>
+</dialog>
+
+<dialog class="caja" id="miCuenta" aria-labelledby="miCuentaTitulo">
+  <div class="dentro">
+    <h2 id="miCuentaTitulo">Tu cuenta</h2>
+    <p class="nota">Entraste como <b id="miCorreo"></b>. Es la misma cuenta de Bocón Estudio.</p>
+    <div class="botones">
+      <button class="boton" type="button" id="salir">Salir</button>
+      <button class="boton principal" type="button" data-cerrar>Listo</button>
+    </div>
+  </div>
+</dialog>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -264,14 +313,20 @@ function mostrar(svg,que){
 
 let reloj=null;
 async function pedir(cuerpo){
-  if(E.ocupado) return;E.ocupado=true;E.ultimo=cuerpo;
+  if(E.ocupado) return;
+  if(!CU.cfg){estado('error','La página todavía no tiene las cuentas configuradas.');return;}
+  if(!CU.user){CU.pendiente=cuerpo;abrirEntrar();return;}
+  E.ocupado=true;E.ultimo=cuerpo;
   const inicio=Date.now();estado('dibujando','Dibujando…');
   if(matchMedia('(max-width:899px)').matches) $('tapete').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'center'});
   reloj=setInterval(()=>{const s=Math.round((Date.now()-inicio)/1000);$('avisoTexto').textContent=s<4?'Dibujando…':`Dibujando… ${s} s`;},1000);
   const corte=new AbortController(),limite=setTimeout(()=>corte.abort(),75000);
   try{
-    const r=await fetch('/api/dibujar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cuerpo),signal:corte.signal});
+    const tok=await token();
+    const r=await fetch('/api/dibujar',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+(tok||'')},body:JSON.stringify(cuerpo),signal:corte.signal});
     const j=await r.json().catch(()=>({}));
+    if(j.tope!=null&&CU.cuenta){CU.cuenta.usados=j.usados;CU.cuenta.tope=j.tope;pintarCuenta();}
+    if(r.status===401){CU.pendiente=cuerpo;estado(E.svg?'listo':'vacio',E.svg?'':'Tu dibujo sale aquí.');abrirEntrar();return;}
     if(!r.ok) throw new Error(j.error||'No se pudo dibujar. Intenta otra vez.');
     const svg=limpiar(j.svg);if(!svg) throw new Error('La IA no regresó un dibujo que se pueda mostrar. Intenta otra vez.');
     mostrar(svg,cuerpo.que);guardar(cuerpo.que,svg);
@@ -348,6 +403,68 @@ function pintarLista(){
 }
 $('limpiar').addEventListener('click',()=>{try{localStorage.removeItem(CLAVE);}catch(_){}pintarLista();});
 pintarLista();
+
+// ---------- cuenta de SeaKings (la misma de Bocón) ----------
+const CU={cfg:null,sb:null,user:null,cuenta:null,pendiente:null};
+const cargarScript=src=>new Promise((ok,mal)=>{const x=document.createElement('script');x.src=src;x.onload=ok;x.onerror=mal;document.head.appendChild(x);});
+async function token(){try{const {data}=await CU.sb.auth.getSession();return data&&data.session&&data.session.access_token||null;}catch(_){return null;}}
+function pintarCuenta(){
+  const b=$('cuentaBtn'),p=$('cuenta');b.hidden=!CU.cfg;b.textContent=CU.user?'Tu cuenta':'Entrar';
+  if(!CU.cfg){p.textContent='';return;}
+  const d=CU.cfg.dibujos||{gratis:10,pro:30};
+  if(!CU.user){p.innerHTML=`Para dibujar necesitas tu cuenta de SeaKings: tienes ${d.gratis} dibujos gratis al mes. <button type="button" id="cuentaEntrar">Entrar</button>`;$('cuentaEntrar').onclick=()=>abrirEntrar();return;}
+  const c=CU.cuenta;if(!c){p.textContent='Revisando tus dibujos del mes…';return;}
+  const q=Math.max(0,c.tope-c.usados),gratis=!c.pro;
+  p.textContent=q?`Te ${q===1?'queda 1 dibujo':'quedan '+q+' dibujos'}${gratis?' gratis':''} de ${c.tope} este mes.`:`Ya usaste tus ${c.tope} dibujos${gratis?' gratis':''} de este mes. Se renuevan el día 1.`;
+  if(gratis&&c.topePro){const a=document.createElement('a');a.href=CU.cfg.boconUrl;a.target='_blank';a.rel='noopener';a.textContent=`Con Bocón Pro tienes ${c.topePro} al mes.`;p.append(' ',a);}
+}
+async function cargarCuenta(){
+  try{const r=await fetch('/api/dibujar',{headers:{Authorization:'Bearer '+(await token()||'')},cache:'no-store'});const j=await r.json();
+    if(r.ok) CU.cuenta={usados:j.usados,tope:j.tope,topePro:j.topePro,pro:j.pro};}catch(_){}
+  pintarCuenta();
+}
+function abrirEntrar(){
+  const d=$('entrar');$('pasoCodigo').hidden=true;$('codigo').value='';$('entrarError').textContent='';$('entrarSeguir').textContent='Mandarme el código';
+  $('entrarGoogle').hidden=!(CU.cfg&&CU.cfg.google);
+  try{if(CU.pendiente) sessionStorage.setItem('trazo.pendiente',CU.pendiente.que);}catch(_){}
+  d.showModal();setTimeout(()=>$('correo').focus(),30);
+}
+for(const b of document.querySelectorAll('[data-cerrar]')) b.addEventListener('click',()=>b.closest('dialog').close());
+$('cuentaBtn').addEventListener('click',()=>{if(!CU.user) return abrirEntrar();$('miCorreo').textContent=CU.user.email||'';$('miCuenta').showModal();});
+$('salir').addEventListener('click',async()=>{try{await CU.sb.auth.signOut();}catch(_){}CU.user=null;CU.cuenta=null;pintarCuenta();$('miCuenta').close();aviso('Saliste de tu cuenta');});
+$('entrarForm').addEventListener('submit',async e=>{
+  e.preventDefault();const correo=$('correo').value.trim(),err=$('entrarError'),boton=$('entrarSeguir');err.textContent='';
+  if($('pasoCodigo').hidden){
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)){err.textContent='Escribe tu correo completo, por ejemplo tucorreo@gmail.com.';$('correo').focus();return;}
+    boton.disabled=true;
+    try{const {error}=await CU.sb.auth.signInWithOtp({email:correo,options:{emailRedirectTo:location.origin+location.pathname}});if(error) throw error;
+      $('pasoCodigo').hidden=false;$('correoA').textContent=correo;boton.textContent='Entrar';setTimeout(()=>$('codigo').focus(),30);}
+    catch(x){err.textContent=/rate|seconds/i.test(x.message||'')?'Espera un minuto antes de pedir otro código.':'No se pudo mandar el correo. Revisa que esté bien escrito.';}
+    boton.disabled=false;return;
+  }
+  const codigo=$('codigo').value.replace(/\s+/g,'');if(!codigo){err.textContent='Escribe el código que te llegó al correo.';$('codigo').focus();return;}
+  boton.disabled=true;
+  try{const {data,error}=await CU.sb.auth.verifyOtp({email:correo,token:codigo,type:'email'});if(error) throw error;
+    CU.user=data.user||(data.session&&data.session.user)||CU.user;$('entrar').close();aviso('Entraste como '+correo);
+    await cargarCuenta();const p=CU.pendiente;CU.pendiente=null;try{sessionStorage.removeItem('trazo.pendiente');}catch(_){}if(p) pedir(p);}
+  catch(x){err.textContent='Ese código no funcionó. Revisa que sea el último que te llegó.';}
+  boton.disabled=false;
+});
+$('entrarGoogle').addEventListener('click',async()=>{try{await CU.sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});}catch(_){$('entrarError').textContent='No se pudo abrir Google.';}});
+async function cuentasIniciar(){
+  try{const r=await fetch('/api/config',{cache:'no-store'});if(!r.ok) throw 0;CU.cfg=await r.json();}catch(_){pintarCuenta();return;}
+  const d=CU.cfg.dibujos;if(d){for(const x of document.querySelectorAll('.n-gratis')) x.textContent=d.gratis;for(const x of document.querySelectorAll('.n-pro')) x.textContent=d.pro;}
+  pintarCuenta();
+  try{
+    if(!window.supabase) await cargarScript('/vendor/supabase.js');
+    CU.sb=window.supabase.createClient(CU.cfg.supabaseUrl,CU.cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    CU.sb.auth.onAuthStateChange((ev,ses)=>{const u=ses&&ses.user||null,antes=CU.user&&CU.user.id;CU.user=u;if((u&&u.id)!==antes){CU.cuenta=null;pintarCuenta();if(u) cargarCuenta();}});
+    const {data}=await CU.sb.auth.getSession();CU.user=data&&data.session&&data.session.user||null;
+  }catch(_){}
+  pintarCuenta();
+  if(CU.user){cargarCuenta();try{const q=sessionStorage.getItem('trazo.pendiente');if(q&&!$('que').value) $('que').value=q;sessionStorage.removeItem('trazo.pendiente');}catch(_){}}
+}
+cuentasIniciar();
 </script>
 </body>
 </html>
