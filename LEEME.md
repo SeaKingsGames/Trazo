@@ -38,6 +38,7 @@ Antes hay que tener corrido el SQL de Bocón (`supabase/esquema.sql` del repo de
 - `api/dibujar.js`: función de Vercel. Revisa la cuenta y el contador del mes, tiene las instrucciones fijas del estilo (`ESTILO`, las mismas que en Bocón), llama a Gemini y, si se acaba el límite y hay `FAL_KEY`, a fal.ai. Quita del SVG todo lo que no sea figura (scripts, enlaces, imágenes de fuera).
 - `api/_cuentas.js`: cuentas de Supabase, si es Pro y el contador. `api/config.js`: lo que la página necesita para entrar a la cuenta.
 - `vendor/supabase.js`: cliente de Supabase (licencia MIT), el mismo de Bocón.
+- `manifest.webmanifest`, `sw.js` e `icons/`: para instalar Trazo como app (botón «Instalar» arriba). Si cambias la página y quieres forzar que se actualice en las apps instaladas, sube `CACHE` en `sw.js`.
 - «¿Le cambias algo?» manda el dibujo actual con el cambio. «Hacer otra versión» pide una variación.
 - La lista «Tus dibujos» se guarda solo en el navegador de cada quien.
 
