@@ -8,6 +8,10 @@
 <meta property="og:title" content="Trazo: dibujos de caricatura en SVG">
 <meta property="og:description" content="Escribe qué quieres y sale un dibujo de caricatura en SVG, listo para tus videos.">
 <meta name="theme-color" content="#1e5a48">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Trazo">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fff'/%3E%3Ccircle cx='32' cy='32' r='22' fill='%23f28db2' stroke='%231b1a22' stroke-width='5'/%3E%3Cpath d='M22 26h20M32 26v18' stroke='%231b1a22' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -116,6 +120,9 @@ footer a{color:inherit}
 
 .cuenta-btn{border:2.5px solid var(--tinta);background:var(--blanco);border-radius:999px;padding:6px 16px;font-weight:600;font-size:15px;cursor:pointer;min-height:40px}
 .cuenta-btn:hover{background:#e9eee9}
+.barra-der{display:flex;gap:8px;align-items:center}
+.cuenta-btn.instalar{background:var(--amarillo)}
+.cuenta-btn.instalar:hover{background:#f5d635}
 .cuenta{margin:12px 0 0;font-size:15px;color:var(--gris);min-height:1.55em}
 .cuenta a,.cuenta button{color:var(--tinta);font:inherit;font-weight:600;background:none;border:none;padding:0;text-decoration:underline;cursor:pointer}
 dialog.caja{border:3px solid var(--tinta);border-radius:18px;padding:0;width:min(440px,calc(100% - 32px));background:var(--blanco);color:var(--tinta);box-shadow:6px 6px 0 var(--tinta)}
@@ -140,7 +147,10 @@ dialog.caja::backdrop{background:rgba(27,26,34,.55)}
 <div class="envoltura">
   <header class="barra">
     <a class="marca" href="/" aria-label="Trazo, inicio">Trazo</a>
-    <button class="cuenta-btn" id="cuentaBtn" type="button" hidden>Entrar</button>
+    <div class="barra-der">
+      <button class="cuenta-btn instalar" id="instalar" type="button" hidden>Instalar</button>
+      <button class="cuenta-btn" id="cuentaBtn" type="button" hidden>Entrar</button>
+    </div>
   </header>
 
   <main class="mesa">
@@ -224,6 +234,8 @@ dialog.caja::backdrop{background:rgba(27,26,34,.55)}
       <p>Sí, en tus videos, juegos y proyectos.</p>
       <h3>¿Qué pasa con lo que escribo?</h3>
       <p>Lo que pides se manda a Gemini, de Google, para hacer el dibujo; no escribas datos personales. De tu cuenta guardamos tu correo y cuántos dibujos llevas en el mes. Tu lista de dibujos se queda en tu navegador.</p>
+      <h3>¿Se puede instalar?</h3>
+      <p>Sí. Toca «Instalar» arriba (en iPhone: Compartir → «Agregar a inicio») y Trazo queda como app en tu celular o compu.</p>
       <h3>Salió raro, ¿qué hago?</h3>
       <p>Usa «¿Le cambias algo?» para pedir un arreglo, o «Hacer otra versión». Pedidos cortos y concretos salen mejor.</p>
     </section>
@@ -465,6 +477,19 @@ async function cuentasIniciar(){
   if(CU.user){cargarCuenta();try{const q=sessionStorage.getItem('trazo.pendiente');if(q&&!$('que').value) $('que').value=q;sessionStorage.removeItem('trazo.pendiente');}catch(_){}}
 }
 cuentasIniciar();
+
+// ---------- instalar como app ----------
+let pedirInstalar=null;
+const enApp=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const esIphone=/iPhone|iPad|iPod/.test(navigator.userAgent);
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();pedirInstalar=e;$('instalar').hidden=false;});
+window.addEventListener('appinstalled',()=>{pedirInstalar=null;$('instalar').hidden=true;aviso('Trazo quedó instalado');});
+if(esIphone&&!enApp()) $('instalar').hidden=false;
+$('instalar').addEventListener('click',async()=>{
+  if(pedirInstalar){pedirInstalar.prompt();try{await pedirInstalar.userChoice;}catch(_){}pedirInstalar=null;$('instalar').hidden=true;return;}
+  aviso(esIphone?'En Safari toca Compartir y luego «Agregar a inicio».':'Abre el menú del navegador y elige «Instalar app».');
+});
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 </script>
 </body>
 </html>
