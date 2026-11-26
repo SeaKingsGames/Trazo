@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trazo: dibujos de caricatura en SVG para tus videos</title>
+<meta name="description" content="Escribe qué quieres y Trazo lo dibuja como caricatura con contorno grueso, en SVG. Descárgalo en SVG, PNG o como estampita para Bocón Estudio. Gratis.">
+<meta property="og:title" content="Trazo: dibujos de caricatura en SVG">
+<meta property="og:description" content="Escribe qué quieres y sale un dibujo de caricatura en SVG, listo para tus videos.">
+<meta name="theme-color" content="#1e5a48">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fff'/%3E%3Ccircle cx='32' cy='32' r='22' fill='%23f28db2' stroke='%231b1a22' stroke-width='5'/%3E%3Cpath d='M22 26h20M32 26v18' stroke='%231b1a22' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#1b1a22;--papel:#f3f5f1;--blanco:#fff;--gris:#58605b;
+  --tapete:#1e5a48;--tapete-hondo:#174a3b;--rosa:#f28db2;--rosa-hondo:#e46b98;--amarillo:#ffe14d;
+  --radio:14px;--ancho:1120px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--papel);color:var(--tinta);font:400 17px/1.55 Onest,system-ui,sans-serif}
+img{display:block;max-width:100%}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--amarillo);outline-offset:3px;box-shadow:0 0 0 6px var(--tinta)}
+.envoltura{max-width:var(--ancho);margin:0 auto;padding:0 20px}
+
+/* ---------- encabezado ---------- */
+.barra{display:flex;align-items:center;justify-content:space-between;padding:18px 0 4px}
+.marca{font:400 30px/1 'Bagel Fat One',Onest,sans-serif;color:var(--rosa);text-decoration:none;paint-order:stroke fill;-webkit-text-stroke:5px var(--tinta);letter-spacing:.5px}
+.barra a.de{color:var(--gris);font-size:14px;text-decoration:none}
+.barra a.de:hover{text-decoration:underline}
+
+/* ---------- zona principal ---------- */
+.mesa{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;padding:18px 0 40px}
+@media (min-width:900px){.mesa{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start;gap:44px;padding-top:36px}}
+h1{font:400 clamp(34px,8.2vw,58px)/1.04 'Bagel Fat One',Onest,sans-serif;margin:0 0 12px;color:var(--tinta);letter-spacing:.3px}
+.intro{margin:0 0 20px;max-width:36ch;color:var(--gris);font-size:17px}
+.pedir{display:flex;flex-direction:column;gap:10px}
+.campo{width:100%;border:3px solid var(--tinta);border-radius:var(--radio);background:var(--blanco);padding:14px 16px;font-size:18px;resize:none;min-height:58px}
+.campo::placeholder{color:#8b928e}
+.boton{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:2.5px solid var(--tinta);border-radius:12px;background:var(--blanco);padding:10px 16px;font-weight:600;font-size:16px;cursor:pointer;text-decoration:none;min-height:46px}
+.boton:hover{background:#e9eee9}
+.boton:disabled{opacity:.45;cursor:not-allowed}
+.boton.principal{background:var(--rosa);border-width:3px;box-shadow:4px 4px 0 var(--tinta);font-size:18px;min-height:56px;transition:transform .08s,box-shadow .08s}
+.boton.principal:hover{background:var(--rosa-hondo)}
+.boton.principal:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--tinta)}
+@media (min-width:520px){.pedir{flex-direction:row}.pedir .campo{flex:1}.pedir .boton{padding:0 26px}}
+.ideas{display:flex;gap:8px;margin:0;padding:2px 20px 6px;list-style:none;overflow-x:auto;scrollbar-width:none;margin-inline:-20px}
+.ideas::-webkit-scrollbar{display:none}
+.ideas li{flex:none}
+@media (min-width:900px){.ideas{flex-wrap:wrap;overflow:visible;padding:0;margin-inline:0}}
+.ideas button{white-space:nowrap;border:1.5px dashed var(--tinta);background:transparent;border-radius:999px;padding:6px 12px;font-size:15px;cursor:pointer}
+.ideas button:hover{background:var(--blanco);border-style:solid}
+.nota-ideas{font-size:14px;color:var(--gris);margin:16px 0 8px}
+
+/* ---------- el tapete de corte ---------- */
+.tapete{position:relative;aspect-ratio:1/1;width:100%;border-radius:18px;background-color:var(--tapete);
+  background-image:
+    linear-gradient(rgba(255,255,255,.17) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,255,255,.17) 1.5px,transparent 1.5px),
+    linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(45deg,transparent calc(50% - .75px),rgba(255,224,77,.22) calc(50% - .75px),rgba(255,224,77,.22) calc(50% + .75px),transparent calc(50% + .75px));
+  background-size:20% 20%,20% 20%,5% 5%,5% 5%,100% 100%;background-position:-1px -1px;
+  box-shadow:inset 0 0 0 3px var(--tinta),0 3px 0 var(--tapete-hondo);overflow:hidden;display:grid;place-items:center}
+.tapete .dibujo{width:78%;height:78%;object-fit:contain;
+  filter:drop-shadow(5px 0 0 #fff) drop-shadow(-5px 0 0 #fff) drop-shadow(0 5px 0 #fff) drop-shadow(0 -5px 0 #fff) drop-shadow(0 10px 10px rgba(0,0,0,.35));
+  transform:rotate(-2deg)}
+.tapete .dibujo.llega{animation:pegar .42s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pegar{from{transform:translateY(-14px) scale(1.08) rotate(-7deg);opacity:0}to{transform:rotate(-2deg);opacity:1}}
+.aviso{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#e8f3ee;padding:24px}
+.aviso p{margin:12px 0 0;max-width:26ch;font-size:17px}
+.aviso .boton{margin-top:14px}
+.corte{width:46%;max-width:240px;aspect-ratio:1/1}
+.corte circle{fill:none;stroke:#e8f3ee;stroke-width:3;stroke-dasharray:10 9;stroke-linecap:round}
+.dibujando .corte circle{animation:hormigas 1s linear infinite}
+@keyframes hormigas{to{stroke-dashoffset:-38}}
+.oculto{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- acciones ---------- */
+.acciones{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.acciones .boton{white-space:nowrap}
+.acciones .boton.bocon{grid-column:1/-1;order:-1;background:var(--amarillo)}
+.acciones .copiar{grid-column:1/-1}
+
+.cambiar{margin-top:20px;display:flex;flex-direction:column;gap:10px}
+.cambiar label{font-weight:600}
+.fila{display:flex;gap:10px}
+.fila .campo{flex:1;min-height:48px;padding:10px 14px;font-size:17px;border-width:2.5px}
+.otra{align-self:flex-start}
+
+/* ---------- historial ---------- */
+.historial{padding:8px 0 44px}
+.historial h2,.texto h2{font-size:24px;line-height:1.2;margin:0 0 14px}
+.cabeza{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.limpiar{background:none;border:none;color:var(--gris);text-decoration:underline;cursor:pointer;font-size:15px;padding:4px}
+.tira{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px;padding:14px;margin:0;list-style:none;border-radius:16px;background:var(--tapete);box-shadow:inset 0 0 0 3px var(--tinta)}
+.tira button{width:100%;aspect-ratio:1/1;border:none;border-radius:10px;background:rgba(255,255,255,.08);cursor:pointer;padding:10px}
+.tira button:hover{background:rgba(255,255,255,.16)}
+.tira img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff)}
+.vacio{color:var(--gris);margin:0}
+
+/* ---------- textos para entender la página ---------- */
+.texto{border-top:3px solid var(--tinta);padding:36px 0 20px;display:grid;gap:32px}
+@media (min-width:900px){.texto{grid-template-columns:1fr 1fr;gap:56px}}
+.texto p,.texto li{max-width:62ch}
+.texto ol{padding-left:22px;margin:0}
+.texto li{margin-bottom:8px}
+.texto .sigue{margin-top:32px}
+.texto h3{font-size:18px;margin:22px 0 4px}
+.texto h3:first-of-type{margin-top:0}
+.texto p{margin:0}
+footer{padding:28px 0 40px;color:var(--gris);font-size:15px}
+footer a{color:inherit}
+
+.toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%) translateY(12px);opacity:0;visibility:hidden;background:var(--tinta);color:#fff;padding:12px 18px;border-radius:12px;font-weight:500;transition:transform .2s,opacity .2s,visibility .2s;z-index:9;max-width:calc(100% - 32px)}
+.toast.ver{transform:translateX(-50%) translateY(0);opacity:1;visibility:visible}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="envoltura">
+  <header class="barra">
+    <a class="marca" href="/" aria-label="Trazo, inicio">Trazo</a>
+    <a class="de" href="https://www.seakingsstudios.com">de SeaKingsStudios</a>
+  </header>
+
+  <main class="mesa">
+    <section aria-labelledby="titulo">
+      <h1 id="titulo">Dibujos de caricatura para tus videos</h1>
+      <p class="intro">Escribe qué quieres y la IA lo dibuja con código: contorno grueso, colores planos y en SVG, para usarlo a cualquier tamaño.</p>
+      <form class="pedir" id="pedir">
+        <label for="que" class="sr">Qué quieres dibujar</label>
+        <input class="campo" id="que" name="que" maxlength="200" autocomplete="off" placeholder="Una manzana mordida" required>
+        <button class="boton principal" id="dibujar" type="submit">Dibujar</button>
+      </form>
+      <p class="nota-ideas">¿No se te ocurre nada? Prueba con:</p>
+      <ul class="ideas" id="ideas">
+        <li><button type="button">Un taco feliz</button></li>
+        <li><button type="button">Un cohete despegando</button></li>
+        <li><button type="button">Una calaverita de azúcar</button></li>
+        <li><button type="button">Un perro salchicha con lentes</button></li>
+        <li><button type="button">Una nube lloviendo</button></li>
+        <li><button type="button">Un control de videojuego</button></li>
+      </ul>
+    </section>
+
+    <section aria-label="Tu dibujo">
+      <div class="tapete" id="tapete">
+        <img class="dibujo oculto" id="dibujo" alt="">
+        <div class="aviso" id="aviso" aria-live="polite">
+          <div>
+            <svg class="corte" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44"/></svg>
+            <p id="avisoTexto">Tu dibujo sale aquí.</p>
+            <button class="boton oculto" id="reintentar" type="button">Intentar otra vez</button>
+          </div>
+        </div>
+      </div>
+      <div id="herramientas" class="oculto">
+        <div class="acciones">
+          <button class="boton" type="button" id="bajarSvg">Descargar SVG</button>
+          <button class="boton" type="button" id="bajarPng">Descargar PNG</button>
+          <button class="boton bocon" type="button" id="bajarBocon">Estampita para Bocón</button>
+          <button class="boton copiar" type="button" id="copiar">Copiar código</button>
+        </div>
+        <form class="cambiar" id="cambiar">
+          <label for="cambio">¿Le cambias algo?</label>
+          <div class="fila">
+            <input class="campo" id="cambio" maxlength="200" autocomplete="off" placeholder="Ponle hojas verdes">
+            <button class="boton" type="submit">Cambiar</button>
+          </div>
+          <button class="boton otra" type="button" id="otra">Hacer otra versión</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <section class="historial" aria-labelledby="tusDibujos">
+    <div class="cabeza">
+      <h2 id="tusDibujos">Tus dibujos</h2>
+      <button class="limpiar oculto" id="limpiar" type="button">Borrar la lista</button>
+    </div>
+    <p class="vacio" id="vacio">Aquí se guardan los que vayas haciendo, solo en este celular o compu.</p>
+    <ul class="tira oculto" id="tira"></ul>
+  </section>
+
+  <div class="texto">
+    <section>
+      <h2>Cómo funciona</h2>
+      <ol>
+        <li>Escribes qué quieres dibujar, como «un gato astronauta».</li>
+        <li>Una IA de texto escribe el dibujo como código SVG, siempre con el mismo estilo de caricatura.</li>
+        <li>Lo ves en el tapete y lo descargas en SVG, en PNG o como estampita con borde blanco.</li>
+      </ol>
+      <h2 class="sigue">Para qué sirve</h2>
+      <p>Para tener objetos y personajes con el mismo estilo en tus videos de caricatura, presentaciones, juegos o redes. La estampita sale con fondo transparente y borde blanco, igual que las imágenes de <a href="https://www.seakingsstudios.com">Bocón Estudio</a>, así que la subes y queda lista para animarla.</p>
+    </section>
+    <section>
+      <h2>Preguntas</h2>
+      <h3>¿Cuesta?</h3>
+      <p>No. Hay un límite de dibujos por hora para que alcance para todos.</p>
+      <h3>¿Por qué en SVG?</h3>
+      <p>Porque el dibujo está hecho de figuras y no de pixeles: se ve nítido grande o chico, pesa poco y se puede editar en programas como Inkscape, Illustrator o Figma.</p>
+      <h3>¿Puedo usar los dibujos?</h3>
+      <p>Sí, en tus videos, juegos y proyectos.</p>
+      <h3>¿Qué pasa con lo que escribo?</h3>
+      <p>Se manda a Gemini, de Google, para hacer el dibujo. No escribas datos personales. Tu lista de dibujos se queda en tu navegador.</p>
+      <h3>Salió raro, ¿qué hago?</h3>
+      <p>Usa «¿Le cambias algo?» para pedir un arreglo, o «Hacer otra versión». Pedidos cortos y concretos salen mejor.</p>
+    </section>
+  </div>
+
+  <footer>Hecho por <a href="https://www.seakingsstudios.com">SeaKingsStudios</a>.</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const E={que:'',svg:'',url:'',ocupado:false,ultimo:null};
+
+// ---------- limpieza en el navegador (además de la del servidor) ----------
+const FIGURAS=new Set(['svg','g','path','circle','ellipse','rect','line','polyline','polygon','title','desc','defs','linearGradient','radialGradient','stop','clipPath','use']);
+function limpiar(texto){
+  const m=String(texto||'').match(/<svg[\s\S]*<\/svg>/i);if(!m) return null;
+  const doc=new DOMParser().parseFromString(m[0],'image/svg+xml'),raiz=doc.documentElement;
+  if(raiz.nodeName!=='svg'||doc.getElementsByTagName('parsererror').length) return null;
+  (function pasar(n){
+    for(const h of [...n.children]){
+      if(!FIGURAS.has(h.localName)){h.remove();continue;}
+      for(const a of [...h.attributes]){
+        const k=a.name.toLowerCase(),v=a.value;
+        if(k.startsWith('on')||k==='style'||((k==='href'||k==='xlink:href')&&!v.startsWith('#'))||/url\(\s*['"]?(?!#)/i.test(v)) h.removeAttribute(a.name);
+      }
+      pasar(h);
+    }
+  })(raiz);
+  for(const a of [...raiz.attributes]) if(a.name.startsWith('on')||a.name==='style'||a.name==='width'||a.name==='height') raiz.removeAttribute(a.name);
+  if(!raiz.getAttribute('viewBox')) raiz.setAttribute('viewBox','0 0 512 512');
+  raiz.setAttribute('xmlns','http://www.w3.org/2000/svg');
+  if(!raiz.querySelector('path,circle,ellipse,rect,polygon,polyline,line')) return null;
+  return new XMLSerializer().serializeToString(raiz);
+}
+
+// ---------- tapete ----------
+function estado(tipo,texto){
+  const t=$('tapete'),img=$('dibujo');
+  t.classList.toggle('dibujando',tipo==='dibujando');
+  $('aviso').classList.toggle('oculto',tipo==='listo');
+  img.classList.toggle('oculto',tipo!=='listo');
+  $('avisoTexto').textContent=texto||'';
+  $('reintentar').classList.toggle('oculto',tipo!=='error');
+  $('herramientas').classList.toggle('oculto',!E.svg||tipo==='dibujando');
+  for(const b of document.querySelectorAll('#pedir button,#cambiar button,#ideas button')) b.disabled=tipo==='dibujando';
+}
+function mostrar(svg,que){
+  E.svg=svg;E.que=que;
+  if(E.url) URL.revokeObjectURL(E.url);
+  E.url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));
+  const img=$('dibujo');img.alt='Dibujo de '+que;img.src=E.url;
+  img.classList.remove('llega');void img.offsetWidth;img.classList.add('llega');
+  estado('listo');
+}
+
+let reloj=null;
+async function pedir(cuerpo){
+  if(E.ocupado) return;E.ocupado=true;E.ultimo=cuerpo;
+  const inicio=Date.now();estado('dibujando','Dibujando…');
+  if(matchMedia('(max-width:899px)').matches) $('tapete').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'center'});
+  reloj=setInterval(()=>{const s=Math.round((Date.now()-inicio)/1000);$('avisoTexto').textContent=s<4?'Dibujando…':`Dibujando… ${s} s`;},1000);
+  const corte=new AbortController(),limite=setTimeout(()=>corte.abort(),75000);
+  try{
+    const r=await fetch('/api/dibujar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cuerpo),signal:corte.signal});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||'No se pudo dibujar. Intenta otra vez.');
+    const svg=limpiar(j.svg);if(!svg) throw new Error('La IA no regresó un dibujo que se pueda mostrar. Intenta otra vez.');
+    mostrar(svg,cuerpo.que);guardar(cuerpo.que,svg);
+    if(cuerpo.cambio) $('cambio').value='';
+  }catch(e){
+    estado('error',e.name==='AbortError'?'Tardó demasiado. Intenta otra vez.':(e.message||'No se pudo dibujar.'));
+  }finally{clearInterval(reloj);clearTimeout(limite);E.ocupado=false;}
+}
+
+$('pedir').addEventListener('submit',e=>{e.preventDefault();const q=$('que').value.trim();if(q) pedir({que:q});});
+$('ideas').addEventListener('click',e=>{const b=e.target.closest('button');if(!b) return;$('que').value=b.textContent;pedir({que:b.textContent});});
+$('cambiar').addEventListener('submit',e=>{e.preventDefault();const c=$('cambio').value.trim();if(!c){$('cambio').focus();return;}pedir({que:E.que,cambio:c,svg:E.svg});});
+$('otra').addEventListener('click',()=>pedir({que:E.que,otra:true}));
+$('reintentar').addEventListener('click',()=>E.ultimo&&pedir(E.ultimo));
+
+// ---------- descargas ----------
+const nombre=ext=>'trazo-'+(E.que.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'dibujo')+'.'+ext;
+function bajar(blob,archivo){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=archivo;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);}
+function aviso(t){const el=$('toast');el.textContent=t;el.classList.add('ver');clearTimeout(aviso.t);aviso.t=setTimeout(()=>el.classList.remove('ver'),2200);}
+function pintar(svg,lado){
+  return new Promise((ok,mal)=>{
+    const conTam=svg.replace(/<svg\b/,`<svg width="${lado}" height="${lado}"`),img=new Image();
+    img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=lado;c.getContext('2d').drawImage(img,0,0,lado,lado);ok(c);};
+    img.onerror=()=>mal(new Error('No se pudo convertir el dibujo'));
+    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(conTam);
+  });
+}
+function recortar(c,margen){
+  const x=c.getContext('2d'),{width:w,height:h}=c,d=x.getImageData(0,0,w,h).data;let a=w,b=h,z=-1,y=-1;
+  for(let j=0;j<h;j++) for(let i=0;i<w;i++) if(d[(j*w+i)*4+3]>8){if(i<a)a=i;if(i>z)z=i;if(j<b)b=j;if(j>y)y=j;}
+  if(z<0) return c;
+  const o=document.createElement('canvas');o.width=z-a+1+margen*2;o.height=y-b+1+margen*2;
+  o.getContext('2d').drawImage(c,a,b,z-a+1,y-b+1,margen,margen,z-a+1,y-b+1);return o;
+}
+async function estampita(svg,lado=1024,borde=26){
+  const base=await pintar(svg,lado),m=borde+4,c=document.createElement('canvas');c.width=c.height=lado+m*2;
+  const s=document.createElement('canvas');s.width=s.height=lado;const sx=s.getContext('2d');
+  sx.drawImage(base,0,0);sx.globalCompositeOperation='source-in';sx.fillStyle='#fff';sx.fillRect(0,0,lado,lado);
+  const x=c.getContext('2d');
+  for(const r of [borde,borde*.55]) for(let k=0;k<36;k++){const t=k/36*Math.PI*2;x.drawImage(s,m+Math.cos(t)*r,m+Math.sin(t)*r);}
+  x.drawImage(base,m,m);
+  return recortar(c,6);
+}
+const aBlob=(c,tipo,q)=>new Promise(ok=>c.toBlob(ok,tipo,q));
+$('bajarSvg').addEventListener('click',()=>{bajar(new Blob([E.svg],{type:'image/svg+xml'}),nombre('svg'));aviso('SVG descargado');});
+$('bajarPng').addEventListener('click',async()=>{try{const c=recortar(await pintar(E.svg,1024),8);bajar(await aBlob(c,'image/png'),nombre('png'));aviso('PNG descargado');}catch(e){aviso(e.message);}});
+$('bajarBocon').addEventListener('click',async()=>{
+  try{const c=await estampita(E.svg);let b=await aBlob(c,'image/webp',.92),ext='webp';
+    if(!b||b.type!=='image/webp'){b=await aBlob(c,'image/png');ext='png';}
+    bajar(b,nombre(ext));aviso('Estampita descargada');}catch(e){aviso(e.message);}
+});
+$('copiar').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(E.svg);aviso('Código copiado');}catch(_){aviso('No se pudo copiar');}});
+
+// ---------- lista de dibujos (solo en este navegador) ----------
+const CLAVE='trazo.dibujos';
+function leer(){try{return JSON.parse(localStorage.getItem(CLAVE)||'[]');}catch(_){return [];}}
+function guardar(que,svg){
+  const l=leer();l.unshift({que,svg,t:Date.now()});
+  try{localStorage.setItem(CLAVE,JSON.stringify(l.slice(0,24)));}catch(_){}
+  pintarLista();
+}
+function pintarLista(){
+  const l=leer(),tira=$('tira');
+  $('vacio').classList.toggle('oculto',l.length>0);tira.classList.toggle('oculto',!l.length);$('limpiar').classList.toggle('oculto',!l.length);
+  tira.innerHTML='';
+  l.forEach((d,i)=>{
+    const svg=limpiar(d.svg);if(!svg) return;
+    const li=document.createElement('li'),b=document.createElement('button'),img=document.createElement('img');
+    b.type='button';b.title=d.que;b.setAttribute('aria-label','Abrir '+d.que);
+    img.alt='';img.loading='lazy';img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+    b.appendChild(img);li.appendChild(b);tira.appendChild(li);
+    b.addEventListener('click',()=>{$('que').value=d.que;mostrar(svg,d.que);$('tapete').scrollIntoView({behavior:'smooth',block:'center'});});
+  });
+}
+$('limpiar').addEventListener('click',()=>{try{localStorage.removeItem(CLAVE);}catch(_){}pintarLista();});
+pintarLista();
+</script>
+</body>
+</html>

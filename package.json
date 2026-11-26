@@ -1,0 +1,5 @@
+{
+  "name": "trazo",
+  "private": true,
+  "description": "Trazo: dibujos de caricatura en SVG hechos con IA de texto. La página es index.html y la IA se llama desde api/dibujar.js."
+}
