@@ -4,6 +4,22 @@ Dibujos de caricatura en SVG hechos con una IA de texto: escribes qué quieres (
 
 Se descarga en SVG, en PNG o como **estampita para Bocón** (WebP con fondo transparente y borde blanco, igual que las imágenes de Bocón Estudio).
 
+## Qué se puede hacer
+
+| Modo | Qué sale | Para Bocón |
+|---|---|---|
+| **Estampita** | Un objeto o personaje con fondo transparente (512×512). Con «El mismo dibujo con otra cara» se pide el mismo dibujo feliz, triste, enojado, sorprendido, asustado, enamorado, dormido o pensativo | «Estampita para Bocón» (WebP con borde blanco) → *+ Imagen → Subir* |
+| **Fondo** | Un lugar a pantalla completa, 16:9 (1920×1080) o 9:16 (1080×1920), sin personajes y con el centro despejado | «Fondo para Bocón» (WebP del tamaño del video) → *Fondo → Subir imagen* |
+| **Personaje armable ✦** (solo Bocón Pro) | Un personaje de cuerpo entero con sus piezas en grupos `pieA`, `pieB`, `cuerpo`, `brazoA`, `brazoB` y `cabeza` (A es el lado derecho del personaje, a la izquierda de la imagen), sin ojos ni boca y con guías invisibles `ojoA`, `ojoB` y `boca` | «Marioneta para Bocón» (`.marioneta.svg`) → *+ Personaje → Importar*. Bocón arma la marioneta, le pone ojos listos y boca, y mueve brazos y pies |
+
+«¿Le cambias algo?» y «Hacer otra versión» funcionan en los tres modos. Todo cuenta como un dibujo del mes.
+
+## Galería pública
+
+«Publicar en la galería» manda el dibujo (estampitas y fondos) a la tabla `trazo_galeria` como **pendiente**. Sale en la galería ([www.seakingsstudios.com/galeria-trazo](https://www.seakingsstudios.com/galeria-trazo)) cuando un administrador lo aprueba: los correos de `ADMIN_CORREOS` ven **Tu cuenta → Revisar la galería**, donde pueden corregir el nombre, aprobar o rechazar. Cada quien puede tener hasta 10 pendientes.
+
+Para activarla, corre una vez `supabase/galeria.sql` en Supabase (**SQL Editor → New query**, pega y **Run**) y pon `ADMIN_CORREOS` en Vercel. Para quitar un dibujo ya aprobado: en Supabase, **Table Editor → trazo_galeria**, cambia su `estado` a `rechazado`.
+
 ## Cuentas y contador
 
 Para dibujar hay que entrar con la cuenta de SeaKings, la misma de Bocón Estudio (mismo Supabase). Los dibujos se cuentan juntos con los de Bocón en la tabla `bocon_dibujos`: gratis 10 al mes y con Bocón Pro 30. Se renuevan el día 1 (hora de México). Si la IA falla, el dibujo no se cuenta.
@@ -30,13 +46,15 @@ Antes hay que tener corrido el SQL de Bocón (`supabase/esquema.sql` del repo de
 | `BOCON_URL` | La dirección de Bocón, para el enlace «Con Bocón Pro…» | Lleva a seakingsstudios.com |
 | `GEMINI_MODELOS` | Modelos a probar en orden, separados por comas | `gemini-flash-latest,gemini-flash-lite-latest` |
 | `LIMITE_POR_HORA` | Freno extra contra ráfagas, por persona | 20 |
+| `ADMIN_CORREOS` | Correos que revisan la galería (separados por comas) | Nadie puede aprobar dibujos |
 | `FAL_KEY` y `FAL_MODELO` | Respaldo con fal.ai cuando Gemini ya no responde. **Cobra de tus créditos** | Solo se usa Gemini |
 
 ## Cómo funciona
 
 - `index.html`: toda la página. Limpia el SVG otra vez antes de mostrarlo y lo muestra como imagen, así nunca corre código.
 - `api/dibujar.js`: función de Vercel. Revisa la cuenta y el contador del mes, tiene las instrucciones fijas del estilo (`ESTILO`, las mismas que en Bocón), llama a Gemini y, si se acaba el límite y hay `FAL_KEY`, a fal.ai. Quita del SVG todo lo que no sea figura (scripts, enlaces, imágenes de fuera).
-- `api/_cuentas.js`: cuentas de Supabase, si es Pro y el contador. `api/config.js`: lo que la página necesita para entrar a la cuenta.
+- `api/_cuentas.js`: cuentas de Supabase, si es Pro, si es administrador y el contador. `api/config.js`: lo que la página necesita para entrar a la cuenta. `api/_svg.js`: la limpieza del SVG.
+- `api/galeria.js`: la galería. `GET /api/galeria` da los aprobados (con permiso para que el sitio oficial los lea), `GET /api/galeria?svg=<id>` da el dibujo como imagen, y publicar y revisar van por `POST` con la cuenta.
 - `vendor/supabase.js`: cliente de Supabase (licencia MIT), el mismo de Bocón.
 - `manifest.webmanifest`, `sw.js` e `icons/`: para instalar Trazo como app (botón «Instalar» arriba). Si cambias la página y quieres forzar que se actualice en las apps instaladas, sube `CACHE` en `sw.js`.
 - «¿Le cambias algo?» manda el dibujo actual con el cambio. «Hacer otra versión» pide una variación.
@@ -50,4 +68,4 @@ Antes hay que tener corrido el SQL de Bocón (`supabase/esquema.sql` del repo de
 
 ## Cambiar el estilo
 
-Todo el estilo está en el texto `ESTILO` de `api/dibujar.js`. Si cambias el grosor o el color del contorno, también conviene cambiar el borde blanco de la estampita (`estampita()` en `index.html`).
+Todo el estilo está en `api/dibujar.js`: `ESTILO` (estampitas), `estiloFondo()` (fondos), `ESTILO_ARMABLE` (personajes armables) y `CARAS` (las otras caras). Si cambias el grosor o el color del contorno, también conviene cambiar el borde blanco de la estampita (`estampita()` en `index.html`).

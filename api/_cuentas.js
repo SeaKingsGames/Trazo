@@ -31,5 +31,7 @@ async function usados(uid,mes){
   const r=await db('bocon_dibujos?select=usados&user_id=eq.'+encodeURIComponent(uid)+'&mes=eq.'+mes);
   return r.ok&&Array.isArray(r.j)&&r.j[0]?r.j[0].usados:0;
 }
+// administradores de la galería (correos en ADMIN_CORREOS)
+const esAdmin=email=>!!email&&env('ADMIN_CORREOS').toLowerCase().split(/[,\s]+/).filter(Boolean).includes(String(email).toLowerCase());
 const rpc=(fn,args)=>db('rpc/'+fn,{method:'POST',body:JSON.stringify(args)});
-module.exports={env,configurado,usuario,db,esPro,tope,mesActual,usados,rpc};
+module.exports={env,configurado,usuario,db,esPro,esAdmin,tope,mesActual,usados,rpc};
