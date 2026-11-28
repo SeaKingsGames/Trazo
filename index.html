@@ -58,6 +58,15 @@ h1{font:400 clamp(34px,8.2vw,58px)/1.04 'Bagel Fat One',Onest,sans-serif;margin:
 .ideas button{white-space:nowrap;border:1.5px dashed var(--tinta);background:transparent;border-radius:999px;padding:6px 12px;font-size:15px;cursor:pointer}
 .ideas button:hover{background:var(--blanco);border-style:solid}
 .nota-ideas{font-size:14px;color:var(--gris);margin:16px 0 8px}
+.modos{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.modos button,.formato button,.caras button{border:2.5px solid var(--tinta);background:var(--blanco);border-radius:999px;padding:7px 14px;font-weight:600;font-size:15px;cursor:pointer;min-height:40px}
+.modos button[aria-pressed="true"],.formato button[aria-pressed="true"]{background:var(--tinta);color:#fff}
+.modos .pro{color:#b8860b;margin-left:4px}
+.modos button[aria-pressed="true"] .pro{color:var(--amarillo)}
+.formato{display:flex;gap:8px;margin:0 0 14px}
+.formato button{font-size:14px;padding:5px 12px;min-height:36px}
+.nota-modo{margin:-4px 0 14px;font-size:15px;color:var(--gris);max-width:58ch}
+.nota-modo a{color:var(--tinta);font-weight:600}
 
 /* ---------- el tapete de corte ---------- */
 .tapete{position:relative;aspect-ratio:1/1;width:100%;border-radius:18px;background-color:var(--tapete);
@@ -71,6 +80,14 @@ h1{font:400 clamp(34px,8.2vw,58px)/1.04 'Bagel Fat One',Onest,sans-serif;margin:
   filter:drop-shadow(5px 0 0 #fff) drop-shadow(-5px 0 0 #fff) drop-shadow(0 5px 0 #fff) drop-shadow(0 -5px 0 #fff) drop-shadow(0 10px 10px rgba(0,0,0,.35));
   transform:rotate(-2deg)}
 .tapete .dibujo.llega{animation:pegar .42s cubic-bezier(.2,1.4,.4,1)}
+/* fondos: llenan el tapete, sin borde de estampita */
+.tapete.fondo-h{aspect-ratio:16/9}
+.tapete.fondo-v{aspect-ratio:9/16;max-height:78vh;width:auto;margin:0 auto}
+.tapete.fondo-h .dibujo,.tapete.fondo-v .dibujo{width:100%;height:100%;filter:none;transform:none;border-radius:16px}
+.tapete.fondo-h .dibujo.llega,.tapete.fondo-v .dibujo.llega{animation:aparecer .35s ease-out}
+@keyframes aparecer{from{opacity:0}to{opacity:1}}
+.tapete.armable{aspect-ratio:2/3;max-height:80vh;width:auto;margin:0 auto}
+.tapete.armable .dibujo{width:84%;height:90%}
 @keyframes pegar{from{transform:translateY(-14px) scale(1.08) rotate(-7deg);opacity:0}to{transform:rotate(-2deg);opacity:1}}
 .aviso{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#e8f3ee;padding:24px}
 .aviso p{margin:12px 0 0;max-width:26ch;font-size:17px}
@@ -93,6 +110,18 @@ h1{font:400 clamp(34px,8.2vw,58px)/1.04 'Bagel Fat One',Onest,sans-serif;margin:
 .fila{display:flex;gap:10px}
 .fila .campo{flex:1;min-height:48px;padding:10px 14px;font-size:17px;border-width:2.5px}
 .otra{align-self:flex-start}
+.caras{margin-top:20px}
+.caras p{font-weight:600;margin:0 0 8px}
+.caras ul{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.caras button{font-size:15px;padding:5px 12px;min-height:38px}
+.galeria-pub{margin-top:20px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.galeria-pub a{color:var(--tinta);font-size:15px}
+.nota-armable{margin:12px 0 0;font-size:15px;color:var(--gris)}
+.revisar li{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center;padding:10px 0;border-top:1.5px solid #dde2dd}
+.revisar ul{list-style:none;margin:0;padding:0;max-height:60vh;overflow:auto}
+.revisar img{width:96px;height:96px;object-fit:contain;background:var(--tapete);border-radius:10px}
+.revisar .fila{flex-wrap:wrap}
+.revisar .campo{min-height:40px;font-size:15px;padding:6px 10px;width:100%}
 
 /* ---------- historial ---------- */
 .historial{padding:8px 0 44px}
@@ -103,6 +132,7 @@ h1{font:400 clamp(34px,8.2vw,58px)/1.04 'Bagel Fat One',Onest,sans-serif;margin:
 .tira button{width:100%;aspect-ratio:1/1;border:none;border-radius:10px;background:rgba(255,255,255,.08);cursor:pointer;padding:10px}
 .tira button:hover{background:rgba(255,255,255,.16)}
 .tira img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff)}
+.tira img.es-fondo{filter:none;border-radius:6px}
 .vacio{color:var(--gris);margin:0}
 
 /* ---------- textos para entender la página ---------- */
@@ -157,20 +187,23 @@ dialog.caja::backdrop{background:rgba(27,26,34,.55)}
     <section aria-labelledby="titulo">
       <h1 id="titulo">Dibujos de caricatura para tus videos</h1>
       <p class="intro">Escribe qué quieres y la IA lo dibuja con código: contorno grueso, colores planos y en SVG, para usarlo a cualquier tamaño.</p>
+      <div class="modos" id="modos" role="group" aria-label="Qué quieres hacer">
+        <button type="button" data-modo="estampita" aria-pressed="true">Estampita</button>
+        <button type="button" data-modo="fondo" aria-pressed="false">Fondo</button>
+        <button type="button" data-modo="armable" aria-pressed="false">Personaje armable<span class="pro" aria-label="de Bocón Pro">✦</span></button>
+      </div>
+      <div class="formato oculto" id="formato" role="group" aria-label="Forma del fondo">
+        <button type="button" data-formato="16:9" aria-pressed="true">Horizontal 16:9</button>
+        <button type="button" data-formato="9:16" aria-pressed="false">Vertical 9:16 (TikTok)</button>
+      </div>
+      <p class="nota-modo oculto" id="notaModo"></p>
       <form class="pedir" id="pedir">
         <label for="que" class="sr">Qué quieres dibujar</label>
         <input class="campo" id="que" name="que" maxlength="200" autocomplete="off" placeholder="Una manzana mordida" required>
         <button class="boton principal" id="dibujar" type="submit">Dibujar</button>
       </form>
       <p class="nota-ideas">¿No se te ocurre nada? Prueba con:</p>
-      <ul class="ideas" id="ideas">
-        <li><button type="button">Un taco feliz</button></li>
-        <li><button type="button">Un cohete despegando</button></li>
-        <li><button type="button">Una calaverita de azúcar</button></li>
-        <li><button type="button">Un perro salchicha con lentes</button></li>
-        <li><button type="button">Una nube lloviendo</button></li>
-        <li><button type="button">Un control de videojuego</button></li>
-      </ul>
+      <ul class="ideas" id="ideas"></ul>
     </section>
 
     <section aria-label="Tu dibujo">
@@ -190,7 +223,23 @@ dialog.caja::backdrop{background:rgba(27,26,34,.55)}
           <button class="boton" type="button" id="bajarSvg">Descargar SVG</button>
           <button class="boton" type="button" id="bajarPng">Descargar PNG</button>
           <button class="boton bocon" type="button" id="bajarBocon">Estampita para Bocón</button>
+          <button class="boton bocon oculto" type="button" id="bajarFondo">Fondo para Bocón</button>
+          <button class="boton bocon oculto" type="button" id="bajarMarioneta">Marioneta para Bocón</button>
           <button class="boton copiar" type="button" id="copiar">Copiar código</button>
+        </div>
+        <p class="nota-armable oculto" id="notaArmable">En Bocón Estudio: <b>+ Personaje → Importar</b> y elige el archivo. Bocón le pone ojos que hacen todos los gestos y boca que habla, y le mueve brazos y pies.</p>
+        <div class="caras" id="caras">
+          <p>El mismo dibujo con otra cara:</p>
+          <ul>
+            <li><button type="button" data-cara="feliz">Feliz</button></li>
+            <li><button type="button" data-cara="triste">Triste</button></li>
+            <li><button type="button" data-cara="enojado">Enojado</button></li>
+            <li><button type="button" data-cara="sorprendido">Sorprendido</button></li>
+            <li><button type="button" data-cara="asustado">Asustado</button></li>
+            <li><button type="button" data-cara="enamorado">Enamorado</button></li>
+            <li><button type="button" data-cara="dormido">Dormido</button></li>
+            <li><button type="button" data-cara="pensativo">Pensativo</button></li>
+          </ul>
         </div>
         <form class="cambiar" id="cambiar">
           <label for="cambio">¿Le cambias algo?</label>
@@ -200,6 +249,10 @@ dialog.caja::backdrop{background:rgba(27,26,34,.55)}
           </div>
           <button class="boton otra" type="button" id="otra">Hacer otra versión</button>
         </form>
+        <div class="galeria-pub" id="galeriaPub">
+          <button class="boton" type="button" id="publicar">Publicar en la galería</button>
+          <a href="https://www.seakingsstudios.com/galeria-trazo" target="_blank" rel="noopener">Ver la galería</a>
+        </div>
       </div>
     </section>
   </main>
@@ -221,6 +274,12 @@ dialog.caja::backdrop{background:rgba(27,26,34,.55)}
         <li>Una IA de texto escribe el dibujo como código SVG, siempre con el mismo estilo de caricatura.</li>
         <li>Lo ves en el tapete y lo descargas en SVG, en PNG o como estampita con borde blanco.</li>
       </ol>
+      <h2 class="sigue">Estampitas, fondos y personajes</h2>
+      <ul>
+        <li><b>Estampita:</b> un objeto o personaje con fondo transparente. Con «El mismo dibujo con otra cara» sacas el mismo personaje feliz, triste, enojado o dormido, para que tus escenas combinen.</li>
+        <li><b>Fondo:</b> un lugar a pantalla completa, horizontal o vertical para TikTok, con el centro despejado para que se paren tus personajes. En Bocón lo pones como fondo de la escena.</li>
+        <li><b>Personaje armable ✦:</b> un personaje con cabeza, cuerpo, brazos y pies por separado. Bocón Estudio lo arma como marioneta, le pone ojos y boca, y lo hace hablar, gesticular y bailar. Es de Bocón Pro.</li>
+      </ul>
       <h2 class="sigue">Para qué sirve</h2>
       <p>Para tener objetos y personajes con el mismo estilo en tus videos de caricatura, presentaciones, juegos o redes. La estampita sale con fondo transparente y borde blanco, igual que las imágenes de <a href="https://www.seakingsstudios.com">Bocón Estudio</a>, así que la subes y queda lista para animarla.</p>
     </section>
@@ -236,6 +295,8 @@ dialog.caja::backdrop{background:rgba(27,26,34,.55)}
       <p>Lo que pides se manda a Gemini, de Google, para hacer el dibujo; no escribas datos personales. De tu cuenta guardamos tu correo y cuántos dibujos llevas en el mes. Tu lista de dibujos se queda en tu navegador. Los detalles están en el <a href="https://www.seakingsstudios.com/privacidad-trazo">aviso de privacidad</a>.</p>
       <h3>¿Se puede instalar?</h3>
       <p>Sí. Toca «Instalar» arriba (en iPhone: Compartir → «Agregar a inicio») y Trazo queda como app en tu celular o compu.</p>
+      <h3>¿Qué es la galería?</h3>
+      <p>Con «Publicar en la galería» mandas tu dibujo a la <a href="https://www.seakingsstudios.com/galeria-trazo">galería de Trazo</a>. Sale con el nombre que le pongas, sin tu correo, cuando lo revisemos. Si quieres quitar uno, escríbenos.</p>
       <h3>Salió raro, ¿qué hago?</h3>
       <p>Usa «¿Le cambias algo?» para pedir un arreglo, o «Hacer otra versión». Pedidos cortos y concretos salen mejor.</p>
     </section>
@@ -265,11 +326,35 @@ dialog.caja::backdrop{background:rgba(27,26,34,.55)}
   </form>
 </dialog>
 
+<dialog class="caja" id="publicarCaja" aria-labelledby="publicarTitulo">
+  <form id="publicarForm" novalidate>
+    <h2 id="publicarTitulo">Publicar en la galería</h2>
+    <p class="nota">Tu dibujo saldrá en la galería pública de Trazo cuando lo revisemos. Se ve el nombre que le pongas, nunca tu correo.</p>
+    <label for="pubTitulo">Nombre del dibujo</label>
+    <input class="campo" id="pubTitulo" maxlength="80" autocomplete="off">
+    <p class="error" id="pubError" role="alert"></p>
+    <div class="botones">
+      <button class="boton" type="button" data-cerrar>Cancelar</button>
+      <button class="boton principal" type="submit" id="pubSeguir">Publicar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="caja revisar" id="revisarCaja" aria-labelledby="revisarTitulo">
+  <div class="dentro">
+    <h2 id="revisarTitulo">Revisar la galería</h2>
+    <p class="nota" id="revisarNota">Cargando…</p>
+    <ul id="revisarLista"></ul>
+    <div class="botones"><button class="boton" type="button" data-cerrar>Cerrar</button></div>
+  </div>
+</dialog>
+
 <dialog class="caja" id="miCuenta" aria-labelledby="miCuentaTitulo">
   <div class="dentro">
     <h2 id="miCuentaTitulo">Tu cuenta</h2>
     <p class="nota">Entraste como <b id="miCorreo"></b>. Es la misma cuenta de Bocón Estudio.</p>
     <div class="botones">
+      <button class="boton oculto" type="button" id="revisarBtn">Revisar la galería</button>
       <button class="boton" type="button" id="salir">Salir</button>
       <button class="boton principal" type="button" data-cerrar>Listo</button>
     </div>
@@ -278,7 +363,36 @@ dialog.caja::backdrop{background:rgba(27,26,34,.55)}
 
 <script>
 const $=id=>document.getElementById(id);
-const E={que:'',svg:'',url:'',ocupado:false,ultimo:null};
+const E={que:'',svg:'',url:'',ocupado:false,ultimo:null,modo:'estampita',formato:'16:9',dibModo:'estampita',dibFormato:'16:9'};
+
+// ---------- modos: estampita, fondo y personaje armable ----------
+const MODOS={
+  estampita:{ph:'Una manzana mordida',ideas:['Un taco feliz','Un cohete despegando','Una calaverita de azúcar','Un perro salchicha con lentes','Una nube lloviendo','Un control de videojuego']},
+  fondo:{ph:'Una cocina mexicana',ideas:['Una cocina mexicana','Un salón de clases','Una playa al atardecer','Un bosque de noche','Una calle con tienditas','Un cuarto gamer']},
+  armable:{ph:'Un chef bigotón',ideas:['Un chef bigotón','Una niña astronauta','Un gato vaquero','Un robot amistoso','Una calaverita catrina','Un luchador enmascarado']}
+};
+function ponerModo(m,silencio){
+  E.modo=MODOS[m]?m:'estampita';
+  for(const b of document.querySelectorAll('#modos button')) b.setAttribute('aria-pressed',String(b.dataset.modo===E.modo));
+  $('formato').classList.toggle('oculto',E.modo!=='fondo');
+  for(const b of document.querySelectorAll('#formato button')) b.setAttribute('aria-pressed',String(b.dataset.formato===E.formato));
+  $('que').placeholder=MODOS[E.modo].ph;
+  $('ideas').innerHTML=MODOS[E.modo].ideas.map(t=>`<li><button type="button">${t}</button></li>`).join('');
+  pintarNotaModo();
+  if(!silencio&&E.svg&&(E.dibModo!==E.modo||(E.modo==='fondo'&&E.dibFormato!==E.formato))){E.svg='';$('dibujo').removeAttribute('src');ajustarTapete(E.modo,E.formato);estado('vacio','Tu dibujo sale aquí.');}
+  else if(!E.svg) ajustarTapete(E.modo,E.formato);
+}
+function pintarNotaModo(){
+  const n=$('notaModo');let t='';
+  if(E.modo==='fondo') t='Un lugar a pantalla completa, sin personajes y con el centro despejado para que se paren los tuyos.';
+  if(E.modo==='armable') t=CU.cuenta&&!CU.cuenta.pro?`El personaje armable es de Bocón Pro: sale con cabeza, cuerpo, brazos y pies separados para que Bocón lo anime. <a href="${CU.cfg?CU.cfg.boconUrl:'https://www.seakingsstudios.com'}" target="_blank" rel="noopener">Conoce Bocón Pro</a>.`:'Sale con cabeza, cuerpo, brazos y pies separados y sin ojos ni boca: Bocón Estudio se los pone y lo anima.';
+  n.innerHTML=t;n.classList.toggle('oculto',!t);
+}
+function ajustarTapete(modo,formato){
+  const t=$('tapete');t.classList.toggle('fondo-h',modo==='fondo'&&formato!=='9:16');t.classList.toggle('fondo-v',modo==='fondo'&&formato==='9:16');t.classList.toggle('armable',modo==='armable');
+}
+$('modos').addEventListener('click',e=>{const b=e.target.closest('button[data-modo]');if(b) ponerModo(b.dataset.modo);});
+$('formato').addEventListener('click',e=>{const b=e.target.closest('button[data-formato]');if(!b) return;E.formato=b.dataset.formato;ponerModo('fondo');});
 
 // ---------- limpieza en el navegador (además de la del servidor) ----------
 const FIGURAS=new Set(['svg','g','path','circle','ellipse','rect','line','polyline','polygon','title','desc','defs','linearGradient','radialGradient','stop','clipPath','use']);
@@ -312,10 +426,15 @@ function estado(tipo,texto){
   $('avisoTexto').textContent=texto||'';
   $('reintentar').classList.toggle('oculto',tipo!=='error');
   $('herramientas').classList.toggle('oculto',!E.svg||tipo==='dibujando');
-  for(const b of document.querySelectorAll('#pedir button,#cambiar button,#ideas button')) b.disabled=tipo==='dibujando';
+  for(const b of document.querySelectorAll('#pedir button,#cambiar button,#ideas button,#caras button,#modos button,#formato button')) b.disabled=tipo==='dibujando';
 }
-function mostrar(svg,que){
-  E.svg=svg;E.que=que;
+function mostrar(svg,que,modo,formato){
+  E.svg=svg;E.que=que;E.dibModo=modo||'estampita';E.dibFormato=formato||'16:9';
+  ajustarTapete(E.dibModo,E.dibFormato);
+  const m=E.dibModo;
+  $('bajarBocon').classList.toggle('oculto',m!=='estampita');$('bajarFondo').classList.toggle('oculto',m!=='fondo');$('bajarMarioneta').classList.toggle('oculto',m!=='armable');
+  $('notaArmable').classList.toggle('oculto',m!=='armable');$('caras').classList.toggle('oculto',m!=='estampita');$('galeriaPub').classList.toggle('oculto',m==='armable');
+  $('cambio').placeholder=m==='fondo'?'Ponle una ventana a la izquierda':m==='armable'?'Ponle un sombrero rojo':'Ponle hojas verdes';
   if(E.url) URL.revokeObjectURL(E.url);
   E.url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));
   const img=$('dibujo');img.alt='Dibujo de '+que;img.src=E.url;
@@ -340,28 +459,34 @@ async function pedir(cuerpo){
     if(j.tope!=null&&CU.cuenta){CU.cuenta.usados=j.usados;CU.cuenta.tope=j.tope;pintarCuenta();}
     if(r.status===401){CU.pendiente=cuerpo;estado(E.svg?'listo':'vacio',E.svg?'':'Tu dibujo sale aquí.');abrirEntrar();return;}
     if(!r.ok) throw new Error(j.error||'No se pudo dibujar. Intenta otra vez.');
+    if(r.status===403&&j.soloPro){pintarNotaModo();throw new Error(j.error);}
     const svg=limpiar(j.svg);if(!svg) throw new Error('La IA no regresó un dibujo que se pueda mostrar. Intenta otra vez.');
-    mostrar(svg,cuerpo.que);guardar(cuerpo.que,svg);
+    mostrar(svg,cuerpo.que,cuerpo.modo,cuerpo.formato);guardar(cuerpo.que,svg,cuerpo.modo,cuerpo.formato);
     if(cuerpo.cambio) $('cambio').value='';
   }catch(e){
     estado('error',e.name==='AbortError'?'Tardó demasiado. Intenta otra vez.':(e.message||'No se pudo dibujar.'));
   }finally{clearInterval(reloj);clearTimeout(limite);E.ocupado=false;}
 }
 
-$('pedir').addEventListener('submit',e=>{e.preventDefault();const q=$('que').value.trim();if(q) pedir({que:q});});
-$('ideas').addEventListener('click',e=>{const b=e.target.closest('button');if(!b) return;$('que').value=b.textContent;pedir({que:b.textContent});});
-$('cambiar').addEventListener('submit',e=>{e.preventDefault();const c=$('cambio').value.trim();if(!c){$('cambio').focus();return;}pedir({que:E.que,cambio:c,svg:E.svg});});
-$('otra').addEventListener('click',()=>pedir({que:E.que,otra:true}));
+const nuevo=que=>({que,modo:E.modo,formato:E.modo==='fondo'?E.formato:undefined});
+const sobreActual=extra=>Object.assign({que:E.que,modo:E.dibModo,formato:E.dibModo==='fondo'?E.dibFormato:undefined},extra);
+function puedeArmable(){if(E.modo!=='armable'||!CU.cuenta||CU.cuenta.pro) return true;pintarNotaModo();aviso('El personaje armable es de Bocón Pro');return false;}
+$('pedir').addEventListener('submit',e=>{e.preventDefault();const q=$('que').value.trim();if(q&&puedeArmable()) pedir(nuevo(q));});
+$('ideas').addEventListener('click',e=>{const b=e.target.closest('button');if(!b) return;$('que').value=b.textContent;if(puedeArmable()) pedir(nuevo(b.textContent));});
+$('cambiar').addEventListener('submit',e=>{e.preventDefault();const c=$('cambio').value.trim();if(!c){$('cambio').focus();return;}pedir(sobreActual({cambio:c,svg:E.svg}));});
+$('otra').addEventListener('click',()=>pedir(sobreActual({otra:true})));
+$('caras').addEventListener('click',e=>{const b=e.target.closest('button[data-cara]');if(b) pedir(sobreActual({cara:b.dataset.cara,svg:E.svg}));});
 $('reintentar').addEventListener('click',()=>E.ultimo&&pedir(E.ultimo));
 
 // ---------- descargas ----------
 const nombre=ext=>'trazo-'+(E.que.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'dibujo')+'.'+ext;
 function bajar(blob,archivo){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=archivo;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);}
 function aviso(t){const el=$('toast');el.textContent=t;el.classList.add('ver');clearTimeout(aviso.t);aviso.t=setTimeout(()=>el.classList.remove('ver'),2200);}
-function pintar(svg,lado){
+function pintar(svg,lado,alto){
+  alto=alto||lado;
   return new Promise((ok,mal)=>{
-    const conTam=svg.replace(/<svg\b/,`<svg width="${lado}" height="${lado}"`),img=new Image();
-    img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=lado;c.getContext('2d').drawImage(img,0,0,lado,lado);ok(c);};
+    const conTam=svg.replace(/<svg\b/,`<svg width="${lado}" height="${alto}"`),img=new Image();
+    img.onload=()=>{const c=document.createElement('canvas');c.width=lado;c.height=alto;c.getContext('2d').drawImage(img,0,0,lado,alto);ok(c);};
     img.onerror=()=>mal(new Error('No se pudo convertir el dibujo'));
     img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(conTam);
   });
@@ -384,7 +509,16 @@ async function estampita(svg,lado=1024,borde=26){
 }
 const aBlob=(c,tipo,q)=>new Promise(ok=>c.toBlob(ok,tipo,q));
 $('bajarSvg').addEventListener('click',()=>{bajar(new Blob([E.svg],{type:'image/svg+xml'}),nombre('svg'));aviso('SVG descargado');});
-$('bajarPng').addEventListener('click',async()=>{try{const c=recortar(await pintar(E.svg,1024),8);bajar(await aBlob(c,'image/png'),nombre('png'));aviso('PNG descargado');}catch(e){aviso(e.message);}});
+const tamFondo=()=>E.dibFormato==='9:16'?[1080,1920]:[1920,1080];
+$('bajarPng').addEventListener('click',async()=>{try{
+  const c=E.dibModo==='fondo'?await pintar(E.svg,...tamFondo()):E.dibModo==='armable'?recortar(await pintar(E.svg,1000,1500),8):recortar(await pintar(E.svg,1024),8);
+  bajar(await aBlob(c,'image/png'),nombre('png'));aviso('PNG descargado');}catch(e){aviso(e.message);}});
+$('bajarFondo').addEventListener('click',async()=>{
+  try{const c=await pintar(E.svg,...tamFondo());let b=await aBlob(c,'image/webp',.9),ext='webp';
+    if(!b||b.type!=='image/webp'){b=await aBlob(c,'image/png');ext='png';}
+    bajar(b,nombre(ext));aviso('Fondo descargado. En Bocón: Fondo → Subir imagen');}catch(e){aviso(e.message);}
+});
+$('bajarMarioneta').addEventListener('click',()=>{const t=E.que.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[c]);bajar(new Blob([E.svg.replace(/<svg\b[^>]*>/,m=>m+'<title>'+t+'</title>')],{type:'image/svg+xml'}),nombre('marioneta.svg'));aviso('Listo. En Bocón: + Personaje → Importar');});
 $('bajarBocon').addEventListener('click',async()=>{
   try{const c=await estampita(E.svg);let b=await aBlob(c,'image/webp',.92),ext='webp';
     if(!b||b.type!=='image/webp'){b=await aBlob(c,'image/png');ext='png';}
@@ -395,8 +529,8 @@ $('copiar').addEventListener('click',async()=>{try{await navigator.clipboard.wri
 // ---------- lista de dibujos (solo en este navegador) ----------
 const CLAVE='trazo.dibujos';
 function leer(){try{return JSON.parse(localStorage.getItem(CLAVE)||'[]');}catch(_){return [];}}
-function guardar(que,svg){
-  const l=leer();l.unshift({que,svg,t:Date.now()});
+function guardar(que,svg,modo,formato){
+  const l=leer();l.unshift({que,svg,t:Date.now(),modo:modo||'estampita',formato:formato||undefined});
   try{localStorage.setItem(CLAVE,JSON.stringify(l.slice(0,24)));}catch(_){}
   pintarLista();
 }
@@ -410,7 +544,8 @@ function pintarLista(){
     b.type='button';b.title=d.que;b.setAttribute('aria-label','Abrir '+d.que);
     img.alt='';img.loading='lazy';img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
     b.appendChild(img);li.appendChild(b);tira.appendChild(li);
-    b.addEventListener('click',()=>{$('que').value=d.que;mostrar(svg,d.que);$('tapete').scrollIntoView({behavior:'smooth',block:'center'});});
+    if(d.modo==='fondo') img.classList.add('es-fondo');
+    b.addEventListener('click',()=>{$('que').value=d.que;if(d.modo==='fondo') E.formato=d.formato||'16:9';ponerModo(d.modo||'estampita',true);mostrar(svg,d.que,d.modo,d.formato);$('tapete').scrollIntoView({behavior:'smooth',block:'center'});});
   });
 }
 $('limpiar').addEventListener('click',()=>{try{localStorage.removeItem(CLAVE);}catch(_){}pintarLista();});
@@ -432,8 +567,8 @@ function pintarCuenta(){
 }
 async function cargarCuenta(){
   try{const r=await fetch('/api/dibujar',{headers:{Authorization:'Bearer '+(await token()||'')},cache:'no-store'});const j=await r.json();
-    if(r.ok) CU.cuenta={usados:j.usados,tope:j.tope,topePro:j.topePro,pro:j.pro};}catch(_){}
-  pintarCuenta();
+    if(r.ok) CU.cuenta={usados:j.usados,tope:j.tope,topePro:j.topePro,pro:j.pro,admin:!!j.admin};}catch(_){}
+  pintarCuenta();pintarNotaModo();
 }
 function abrirEntrar(){
   const d=$('entrar');$('pasoCodigo').hidden=true;$('codigo').value='';$('entrarError').textContent='';$('entrarSeguir').textContent='Mandarme el código';
@@ -442,7 +577,44 @@ function abrirEntrar(){
   d.showModal();setTimeout(()=>$('correo').focus(),30);
 }
 for(const b of document.querySelectorAll('[data-cerrar]')) b.addEventListener('click',()=>b.closest('dialog').close());
-$('cuentaBtn').addEventListener('click',()=>{if(!CU.user) return abrirEntrar();$('miCorreo').textContent=CU.user.email||'';$('miCuenta').showModal();});
+$('cuentaBtn').addEventListener('click',()=>{if(!CU.user) return abrirEntrar();$('miCorreo').textContent=CU.user.email||'';$('revisarBtn').classList.toggle('oculto',!(CU.cuenta&&CU.cuenta.admin));$('miCuenta').showModal();});
+
+// ---------- galería pública ----------
+async function api(metodo,ruta,cuerpo){
+  const r=await fetch(ruta,{method:metodo,headers:Object.assign({Authorization:'Bearer '+(await token()||'')},cuerpo?{'Content-Type':'application/json'}:{}),body:cuerpo?JSON.stringify(cuerpo):undefined,cache:'no-store'});
+  const j=await r.json().catch(()=>({}));if(!r.ok) throw new Error(j.error||'No se pudo. Intenta otra vez.');return j;
+}
+$('publicar').addEventListener('click',()=>{
+  if(!E.svg) return;if(!CU.user) return abrirEntrar();
+  $('pubTitulo').value=E.que.slice(0,80);$('pubError').textContent='';$('publicarCaja').showModal();setTimeout(()=>$('pubTitulo').select(),30);
+});
+$('publicarForm').addEventListener('submit',async e=>{
+  e.preventDefault();const t=$('pubTitulo').value.trim(),b=$('pubSeguir');if(!t){$('pubError').textContent='Ponle un nombre.';return;}
+  b.disabled=true;
+  try{await api('POST','/api/galeria',{svg:E.svg,titulo:t,modo:E.dibModo});$('publicarCaja').close();aviso('¡Gracias! Sale en la galería cuando lo revisemos');}
+  catch(x){$('pubError').textContent=x.message;}
+  b.disabled=false;
+});
+async function cargarRevision(){
+  const lista=$('revisarLista'),nota=$('revisarNota');lista.innerHTML='';nota.textContent='Cargando…';
+  try{
+    const {pendientes}=await api('GET','/api/galeria?pendientes=1');
+    nota.textContent=pendientes.length?`${pendientes.length} por revisar. Puedes corregir el nombre antes de aprobar.`:'No hay dibujos por revisar.';
+    for(const d of pendientes){
+      const svg=limpiar(d.svg);if(!svg) continue;
+      const li=document.createElement('li'),img=document.createElement('img'),der=document.createElement('div');
+      img.alt='';img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      der.innerHTML=`<input class="campo" maxlength="80" aria-label="Nombre"><div class="fila"><button class="boton" type="button" data-a="aprobar">Aprobar</button><button class="boton" type="button" data-a="rechazar">Rechazar</button></div>`;
+      der.querySelector('input').value=d.titulo;
+      der.addEventListener('click',async e=>{const b=e.target.closest('button[data-a]');if(!b) return;
+        for(const x of der.querySelectorAll('button')) x.disabled=true;
+        try{await api('POST','/api/galeria',{accion:b.dataset.a,id:d.id,titulo:der.querySelector('input').value});li.remove();aviso(b.dataset.a==='aprobar'?'Aprobado':'Rechazado');}
+        catch(x){aviso(x.message);for(const y of der.querySelectorAll('button')) y.disabled=false;}});
+      li.append(img,der);lista.appendChild(li);
+    }
+  }catch(x){nota.textContent=x.message;}
+}
+$('revisarBtn').addEventListener('click',()=>{$('miCuenta').close();$('revisarCaja').showModal();cargarRevision();});
 $('salir').addEventListener('click',async()=>{try{await CU.sb.auth.signOut();}catch(_){}CU.user=null;CU.cuenta=null;pintarCuenta();$('miCuenta').close();aviso('Saliste de tu cuenta');});
 $('entrarForm').addEventListener('submit',async e=>{
   e.preventDefault();const correo=$('correo').value.trim(),err=$('entrarError'),boton=$('entrarSeguir');err.textContent='';
@@ -477,6 +649,7 @@ async function cuentasIniciar(){
   if(CU.user){cargarCuenta();try{const q=sessionStorage.getItem('trazo.pendiente');if(q&&!$('que').value) $('que').value=q;sessionStorage.removeItem('trazo.pendiente');}catch(_){}}
 }
 cuentasIniciar();
+ponerModo('estampita',true);
 
 // ---------- instalar como app ----------
 let pedirInstalar=null;

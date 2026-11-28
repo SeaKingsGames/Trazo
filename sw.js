@@ -1,6 +1,6 @@
 // Trazo como app: guarda la página para que abra rápido y sin la barra del navegador.
 // Los dibujos y la cuenta siempre van al servidor (no se guardan aquí).
-const CACHE='trazo-v2';
+const CACHE='trazo-v3';
 const BASE=['/','/manifest.webmanifest','/vendor/supabase.js','/icons/icon-192.png','/icons/icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(BASE)));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
